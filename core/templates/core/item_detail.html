@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 mb-4">
+            {% if item.image %}
+            <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}" style="max-height: 500px; object-fit: contain; background: #e9ecef;">
+            {% endif %}
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <h2 class="fw-bold m-0">{{ item.title }}</h2>
+                    <h3>
+                        {% if item.status == 'Lost' %}
+                            <span class="badge bg-danger">Lost</span>
+                        {% else %}
+                            <span class="badge bg-success">Found</span>
+                        {% endif %}
+                    </h3>
+                </div>
+                <h5 class="text-muted mb-4">📍 {{ item.location }}</h5>
+                <p style="white-space: pre-line">{{ item.description }}</p>
+                <hr>
+                <p class="text-muted small mb-0">Posted by <strong>{{ item.user.username }}</strong> on {{ item.created_at|date:"M d, Y" }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <h4 class="fw-bold mb-3">Comments ({{ comments.count }})</h4>
+        
+        {% if user.is_authenticated %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-2">
+                        <textarea class="form-control" id="text" name="text" rows="2" placeholder="Add a comment..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-sm">Post Comment</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning shadow-sm">
+            Please <a href="{% url 'login' %}">Log in</a> to leave a comment.
+        </div>
+        {% endif %}
+
+        <div class="list-group shadow-sm mb-4">
+            {% for comment in comments %}
+            <div class="list-group-item border-0 border-bottom">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1 fw-bold">{{ comment.user.username }}</h6>
+                    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                </div>
+                <p class="mb-0 text-break">{{ comment.text }}</p>
+            </div>
+            {% empty %}
+            <div class="list-group-item border-0 py-4 text-center">
+                <p class="text-muted m-0">No comments yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4 fw-bold">Register Account</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <button type="submit" class="btn btn-success w-100 mt-2">Register</button>
+                </form>
+                <div class="mt-4 text-center text-muted small">
+                    Already have an account? <a href="{% url 'login' %}" class="fw-bold">Log in here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

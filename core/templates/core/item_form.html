@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="mb-4 fw-bold">Post Lost or Found Item</h3>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-bold">Title (What is it?)</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label fw-bold">Status (Lost or Found?)</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="Lost">I lost something (หาย)</option>
+                            <option value="Found">I found something (เจอ)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label fw-bold">Location (Where?)</label>
+                        <input type="text" class="form-control" id="location" name="location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-bold">Description (Details)</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="image" class="form-label fw-bold">Image Attachment</label>
+                        <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Post Item</button>
+                        <a href="{% url 'core:item_list' %}" class="btn btn-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
