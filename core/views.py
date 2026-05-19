@@ -1,10 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from .models import Item, Comment
 
 def item_list(request):
     items = Item.objects.all().order_by('-created_at')
-    return render(request, 'core/item_list.html', {'items': items})
+    query = request.GET.get('q', '')
+    if query:
+        items = items.filter(Q(title__icontains=query) | Q(description__icontains=query) | Q(location__icontains=query))
+    return render(request, 'core/item_list.html', {'items': items, 'query': query})
+
+def item_list_lost(request):
+    items = Item.objects.filter(status='Lost').order_by('-created_at')
+    query = request.GET.get('q', '')
+    if query:
+        items = items.filter(Q(title__icontains=query) | Q(description__icontains=query) | Q(location__icontains=query))
+    return render(request, 'core/item_list.html', {'items': items, 'query': query, 'status': 'Lost'})
+
+def item_list_found(request):
+    items = Item.objects.filter(status='Found').order_by('-created_at')
+    query = request.GET.get('q', '')
+    if query:
+        items = items.filter(Q(title__icontains=query) | Q(description__icontains=query) | Q(location__icontains=query))
+    return render(request, 'core/item_list.html', {'items': items, 'query': query, 'status': 'Found'})
 
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
@@ -41,3 +59,14 @@ def item_create(request):
             return redirect('core:item_detail', pk=item.pk)
             
     return render(request, 'core/item_form.html')
+
+
+@login_required
+def item_delete(request, pk):
+    item = get_object_or_404(Item, pk=pk)
+    if request.user != item.user:
+        return redirect('core:item_detail', pk=pk)
+    if request.method == 'POST':
+        item.delete()
+        return redirect('core:item_list')
+    return redirect('core:item_detail', pk=pk)

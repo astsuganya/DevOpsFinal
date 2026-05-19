@@ -5,6 +5,9 @@ app_name = 'core'
 
 urlpatterns = [
     path('', views.item_list, name='item_list'),
+    path('lost/', views.item_list_lost, name='item_list_lost'),
+    path('found/', views.item_list_found, name='item_list_found'),
     path('item/<int:pk>/', views.item_detail, name='item_detail'),
     path('item/new/', views.item_create, name='item_create'),
+    path('item/<int:pk>/delete/', views.item_delete, name='item_delete'),
 ]

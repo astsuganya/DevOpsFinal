@@ -3,35 +3,41 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-8">
-        <div class="card shadow-sm border-0 mb-4">
+    <div class="col-lg-8 mb-4 mb-lg-0">
+        <div class="surface-card detail-panel stagger-1">
             {% if item.image %}
-            <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}" style="max-height: 500px; object-fit: contain; background: #e9ecef;">
+            <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}" style="max-height: 500px; object-fit: contain; background: #f8f5ff;">
             {% endif %}
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between mb-2">
                     <h2 class="fw-bold m-0">{{ item.title }}</h2>
-                    <h3>
-                        {% if item.status == 'Lost' %}
-                            <span class="badge bg-danger">Lost</span>
-                        {% else %}
-                            <span class="badge bg-success">Found</span>
-                        {% endif %}
-                    </h3>
+                    {% if item.status == 'Lost' %}
+                        <span class="status-badge status-lost">Lost</span>
+                    {% else %}
+                        <span class="status-badge status-found">Found</span>
+                    {% endif %}
                 </div>
-                <h5 class="text-muted mb-4">📍 {{ item.location }}</h5>
+                {% if user.is_authenticated and user == item.user %}
+                <div class="mt-3">
+                    <form method="post" action="{% url 'core:item_delete' item.pk %}" onsubmit="return confirm('Delete this item? This cannot be undone.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+                <h5 class="meta-text mb-4">Location: {{ item.location }}</h5>
                 <p style="white-space: pre-line">{{ item.description }}</p>
                 <hr>
-                <p class="text-muted small mb-0">Posted by <strong>{{ item.user.username }}</strong> on {{ item.created_at|date:"M d, Y" }}</p>
+                <p class="meta-text mb-0">Posted by <strong>{{ item.user.username }}</strong> on {{ item.created_at|date:"M d, Y" }}</p>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4">
-        <h4 class="fw-bold mb-3">Comments ({{ comments.count }})</h4>
+    <div class="col-lg-4">
+        <h4 class="section-title">Comments ({{ comments.count }})</h4>
         
         {% if user.is_authenticated %}
-        <div class="card shadow-sm border-0 mb-4">
+        <div class="surface-card comments-panel stagger-2 mb-4">
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
@@ -43,14 +49,15 @@
             </div>
         </div>
         {% else %}
-        <div class="alert alert-warning shadow-sm">
+        <div class="alert alert-warning shadow-sm comments-panel stagger-2">
             Please <a href="{% url 'login' %}">Log in</a> to leave a comment.
         </div>
         {% endif %}
 
-        <div class="list-group shadow-sm mb-4">
+        <div class="surface-card mb-4 comments-panel stagger-3">
+            <div class="list-group comment-list">
             {% for comment in comments %}
-            <div class="list-group-item border-0 border-bottom">
+            <div class="list-group-item">
                 <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1 fw-bold">{{ comment.user.username }}</h6>
                     <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
@@ -58,10 +65,11 @@
                 <p class="mb-0 text-break">{{ comment.text }}</p>
             </div>
             {% empty %}
-            <div class="list-group-item border-0 py-4 text-center">
+            <div class="list-group-item py-4 text-center">
                 <p class="text-muted m-0">No comments yet.</p>
             </div>
             {% endfor %}
+            </div>
         </div>
     </div>
 </div>

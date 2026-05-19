@@ -1,36 +1,57 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">Recent Items</h2>
+<div class="page-header">
+    {% if status == 'Lost' %}
+        <h1 class="page-title">Lost Items</h1>
+        <p class="page-subtitle">Help find lost items from our community.</p>
+    {% elif status == 'Found' %}
+        <h1 class="page-title">Found Items</h1>
+        <p class="page-subtitle">Browse items that have been found.</p>
+    {% else %}
+        <h1 class="page-title">Recent Items</h1>
+        <p class="page-subtitle">Browse the latest lost and found posts from the community.</p>
+    {% endif %}
 </div>
+
+{% if status %}
+<div class="search-container mb-4">
+    <form method="get" class="search-form">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control search-input" placeholder="Search by title, description, or location..." value="{{ query }}">
+            <button class="btn btn-primary search-btn" type="submit">Search</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
 <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for item in items %}
-    <div class="col">
-        <div class="card h-100 shadow-sm border-0">
+    <div class="col stagger-1">
+        <div class="surface-card item-card h-100">
             {% if item.image %}
-            <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}" style="object-fit: cover; height: 250px;">
+            <img src="{{ item.image.url }}" class="card-img-top item-image" alt="{{ item.title }}">
             {% else %}
-            <div style="height:250px; background:#ddd;" class="d-flex align-items-center justify-content-center">No Image</div>
+            <div class="empty-image">No image uploaded</div>
             {% endif %}
             <div class="card-body">
                 <h5 class="card-title">{{ item.title }}</h5>
                 {% if item.status == 'Lost' %}
-                    <span class="badge bg-danger mb-2">Lost (หาย)</span>
+                    <span class="status-badge status-lost mb-2 d-inline-block">Lost (หาย)</span>
                 {% else %}
-                    <span class="badge bg-success mb-2">Found (เจอ)</span>
+                    <span class="status-badge status-found mb-2 d-inline-block">Found (เจอ)</span>
                 {% endif %}
                 <p class="card-text text-truncate">{{ item.description }}</p>
-                <p class="text-muted small mb-0">📍 {{ item.location }}</p>
-                <p class="text-muted small">👤 {{ item.user.username }}</p>
+                <p class="meta-text mb-0">Location: {{ item.location }}</p>
+                <p class="meta-text">By {{ item.user.username }}</p>
             </div>
-            <div class="card-footer bg-white border-0 pb-3">
-                <a href="{% url 'core:item_detail' item.pk %}" class="btn btn-outline-primary btn-sm w-100">View & Comment</a>
+            <div class="card-footer bg-transparent border-0 pb-3 px-3">
+                <a href="{% url 'core:item_detail' item.pk %}" class="btn btn-outline-primary btn-sm w-100">View and Comment</a>
             </div>
         </div>
     </div>
     {% empty %}
-    <div class="col-12 py-5 text-center">
-        <h4 class="text-muted">No items found. Be the first to post!</h4>
+    <div class="col-12 py-5 text-center surface-card">
+        <h4 class="text-muted my-4">No items. Be the first to post!</h4>
     </div>
     {% endfor %}
 </div>

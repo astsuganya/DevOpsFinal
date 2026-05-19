@@ -2,11 +2,15 @@
 {% load bootstrap5 %}
 
 {% block content %}
+<div class="page-header">
+    <h1 class="page-title">Post Lost or Found Item</h1>
+    <p class="page-subtitle">Share item details clearly so others can help reconnect it.</p>
+</div>
+
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0">
+    <div class="col-lg-7">
+        <div class="surface-card form-panel">
             <div class="card-body p-4">
-                <h3 class="mb-4 fw-bold">Post Lost or Found Item</h3>
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="mb-3">
@@ -33,7 +37,7 @@
                         <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
                     </div>
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Post Item</button>
+                        <button type="submit" class="btn btn-primary">Publish Item</button>
                         <a href="{% url 'core:item_list' %}" class="btn btn-light">Cancel</a>
                     </div>
                 </form>
