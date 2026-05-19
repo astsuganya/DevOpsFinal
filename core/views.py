@@ -70,3 +70,24 @@ def item_delete(request, pk):
         item.delete()
         return redirect('core:item_list')
     return redirect('core:item_detail', pk=pk)
+
+
+@login_required
+def item_update(request, pk):
+    item = get_object_or_404(Item, pk=pk)
+    if request.user != item.user:
+        return redirect('core:item_detail', pk=pk)
+    
+    if request.method == 'POST':
+        item.title = request.POST.get('title', item.title)
+        item.description = request.POST.get('description', item.description)
+        item.location = request.POST.get('location', item.location)
+        item.status = request.POST.get('status', item.status)
+        
+        if 'image' in request.FILES:
+            item.image = request.FILES['image']
+        
+        item.save()
+        return redirect('core:item_detail', pk=item.pk)
+    
+    return render(request, 'core/item_update.html', {'item': item})

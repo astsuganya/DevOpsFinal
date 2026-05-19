@@ -9,5 +9,6 @@ urlpatterns = [
     path('found/', views.item_list_found, name='item_list_found'),
     path('item/<int:pk>/', views.item_detail, name='item_detail'),
     path('item/new/', views.item_create, name='item_create'),
+    path('item/<int:pk>/edit/', views.item_update, name='item_update'),
     path('item/<int:pk>/delete/', views.item_delete, name='item_delete'),
 ]

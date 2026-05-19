@@ -5,28 +5,42 @@
 <div class="row">
     <div class="col-lg-8 mb-4 mb-lg-0">
         <div class="surface-card detail-panel stagger-1">
-            {% if item.image %}
+           {% if item.image %}
             <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}" style="max-height: 500px; object-fit: contain; background: #f8f5ff;">
             {% endif %}
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between mb-2">
-                    <h2 class="fw-bold m-0">{{ item.title }}</h2>
-                    {% if item.status == 'Lost' %}
-                        <span class="status-badge status-lost">Lost</span>
-                    {% else %}
-                        <span class="status-badge status-found">Found</span>
+<div class="card-body p-4">
+                <div class="detail-header">
+                    <div class="detail-title-row">
+                        <h2 class="fw-bold m-0">{{ item.title }}</h2>
+                        {% if item.status == 'Lost' %}
+                            <span class="status-badge status-lost">Lost</span>
+                        {% else %}
+                            <span class="status-badge status-found">Found</span>
+                        {% endif %}
+                    </div>
+                    {% if user.is_authenticated and user == item.user %}
+                    <div class="action-buttons-inline">
+                        <a href="{% url 'core:item_update' item.pk %}" class="btn-icon" title="Edit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </a>
+                        <form method="post" action="{% url 'core:item_delete' item.pk %}" onsubmit="return confirm('Delete this item? This cannot be undone.');" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-icon btn-icon-danger" title="Delete">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
                     {% endif %}
                 </div>
-                {% if user.is_authenticated and user == item.user %}
-                <div class="mt-3">
-                    <form method="post" action="{% url 'core:item_delete' item.pk %}" onsubmit="return confirm('Delete this item? This cannot be undone.');">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </div>
-                {% endif %}
                 <h5 class="meta-text mb-4">Location: {{ item.location }}</h5>
-                <p style="white-space: pre-line">{{ item.description }}</p>
                 <hr>
                 <p class="meta-text mb-0">Posted by <strong>{{ item.user.username }}</strong> on {{ item.created_at|date:"M d, Y" }}</p>
             </div>
@@ -34,42 +48,64 @@
     </div>
     
     <div class="col-lg-4">
-        <h4 class="section-title">Comments ({{ comments.count }})</h4>
+        <div class="comments-section">
+            <h4 class="comments-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Comments <span class="comment-count">{{ comments.count }}</span>
+            </h4>
         
         {% if user.is_authenticated %}
-        <div class="surface-card comments-panel stagger-2 mb-4">
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-2">
-                        <textarea class="form-control" id="text" name="text" rows="2" placeholder="Add a comment..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 btn-sm">Post Comment</button>
-                </form>
-            </div>
+        <div class="comment-form-card stagger-2">
+            <form method="post" class="comment-form">
+                {% csrf_token %}
+                <div class="comment-input-wrapper">
+                    <textarea class="comment-textarea" id="text" name="text" rows="3" placeholder="Add a comment" required></textarea>
+                </div>
+                <button type="submit" class="btn-submit-comment">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    Post Comment
+                </button>
+            </form>
         </div>
         {% else %}
-        <div class="alert alert-warning shadow-sm comments-panel stagger-2">
+        <div class="comment-login-alert stagger-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
             Please <a href="{% url 'login' %}">Log in</a> to leave a comment.
         </div>
         {% endif %}
 
-        <div class="surface-card mb-4 comments-panel stagger-3">
-            <div class="list-group comment-list">
+        <div class="comments-list stagger-3">
             {% for comment in comments %}
-            <div class="list-group-item">
-                <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1 fw-bold">{{ comment.user.username }}</h6>
-                    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+            <div class="comment-item">
+                <div class="comment-avatar">
+                    {{ comment.user.username|make_list|first|upper }}
                 </div>
-                <p class="mb-0 text-break">{{ comment.text }}</p>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author">{{ comment.user.username }}</span>
+                        <span class="comment-time">{{ comment.created_at|timesince }} ago</span>
+                    </div>
+                    <p class="comment-text">{{ comment.text }}</p>
+                </div>
             </div>
             {% empty %}
-            <div class="list-group-item py-4 text-center">
-                <p class="text-muted m-0">No comments yet.</p>
+            <div class="comment-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <p>No comments yet. Be the first to comment!</p>
             </div>
             {% endfor %}
-            </div>
+        </div>
         </div>
     </div>
 </div>
