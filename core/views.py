@@ -26,14 +26,14 @@ def item_list_found(request):
 
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
-    comments = item.comments.all().order_by('created_at')
+    comments = item.comments.filter(parent__isnull=True).order_by('created_at')
     
     if request.method == 'POST':
         if not request.user.is_authenticated:
             return redirect('login')
         text = request.POST.get('text')
         if text:
-            Comment.objects.create(item=item, user=request.user, text=text)
+            Comment.objects.create(item=item, user=request.user, text=text, parent=None)
             return redirect('core:item_detail', pk=item.pk)
             
     return render(request, 'core/item_detail.html', {'item': item, 'comments': comments})
@@ -91,3 +91,50 @@ def item_update(request, pk):
         return redirect('core:item_detail', pk=item.pk)
     
     return render(request, 'core/item_update.html', {'item': item})
+
+
+@login_required
+def comment_edit(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+
+    if request.user != comment.user:
+        return redirect('core:item_detail', pk=comment.item.pk)
+
+    if request.method == 'POST':
+        text = request.POST.get('text', '').strip()
+        if text:
+            comment.text = text
+            comment.save(update_fields=['text'])
+
+    return redirect('core:item_detail', pk=comment.item.pk)
+
+
+@login_required
+def comment_delete(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    item_pk = comment.item.pk
+
+    if request.user != comment.user:
+        return redirect('core:item_detail', pk=item_pk)
+
+    if request.method == 'POST':
+        comment.delete()
+
+    return redirect('core:item_detail', pk=item_pk)
+
+
+@login_required
+def comment_reply(request, pk):
+    parent_comment = get_object_or_404(Comment, pk=pk)
+
+    if request.method == 'POST':
+        text = request.POST.get('text', '').strip()
+        if text:
+            Comment.objects.create(
+                item=parent_comment.item,
+                user=request.user,
+                text=text,
+                parent=parent_comment,
+            )
+
+    return redirect('core:item_detail', pk=parent_comment.item.pk)

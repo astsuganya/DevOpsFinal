@@ -11,4 +11,7 @@ urlpatterns = [
     path('item/new/', views.item_create, name='item_create'),
     path('item/<int:pk>/edit/', views.item_update, name='item_update'),
     path('item/<int:pk>/delete/', views.item_delete, name='item_delete'),
+    path('comment/<int:pk>/edit/', views.comment_edit, name='comment_edit'),
+    path('comment/<int:pk>/delete/', views.comment_delete, name='comment_delete'),
+    path('comment/<int:pk>/reply/', views.comment_reply, name='comment_reply'),
 ]

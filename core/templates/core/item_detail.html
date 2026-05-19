@@ -85,7 +85,7 @@
 
         <div class="comments-list stagger-3">
             {% for comment in comments %}
-            <div class="comment-item">
+            <div class="comment-item" id="comment-{{ comment.pk }}">
                 <div class="comment-avatar">
                     {{ comment.user.username|make_list|first|upper }}
                 </div>
@@ -94,7 +94,117 @@
                         <span class="comment-author">{{ comment.user.username }}</span>
                         <span class="comment-time">{{ comment.created_at|timesince }} ago</span>
                     </div>
-                    <p class="comment-text">{{ comment.text }}</p>
+                     <p class="comment-text" id="comment-text-{{ comment.pk }}">{{ comment.text }}</p>
+                    
+                    <!-- Edit Form (hidden by default) -->
+                    <form method="post" action="{% url 'core:comment_edit' comment.pk %}" class="comment-edit-form" id="edit-form-{{ comment.pk }}" style="display: none;">
+                        {% csrf_token %}
+                        <textarea class="comment-edit-textarea" name="text" rows="2" required>{{ comment.text }}</textarea>
+                        <div class="comment-edit-actions">
+                            <button type="button" class="btn-comment-cancel" onclick="cancelEdit({{ comment.pk }})">Cancel</button>
+                            <button type="submit" class="btn-comment-save">Save</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Comment Actions -->
+                    <div class="comment-actions" id="actions-{{ comment.pk }}">
+                        {% if user.is_authenticated %}
+                        <button type="button" class="btn-comment-action" onclick="toggleReplyForm({{ comment.pk }})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 17 4 12 9 7"></polyline>
+                                <path d="M20 18v-2a4 4 0 0 0-4-4H4"></path>
+                            </svg>
+                            Reply
+                        </button>
+                        {% endif %}
+                        
+                        {% if user.is_authenticated and user == comment.user %}
+                        <button type="button" class="btn-comment-action" onclick="toggleEdit({{ comment.pk }})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Edit
+                        </button>
+                        <form method="post" action="{% url 'core:comment_delete' comment.pk %}" class="comment-delete-form" onsubmit="return confirm('Delete this comment?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-comment-action btn-comment-delete">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                Delete
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Reply Form (hidden by default) -->
+                    {% if user.is_authenticated %}
+                    <div class="reply-form-wrapper" id="reply-form-{{ comment.pk }}" style="display: none;">
+                        <form method="post" action="{% url 'core:comment_reply' comment.pk %}" class="reply-form">
+                            {% csrf_token %}
+                            <textarea class="reply-textarea" name="text" rows="2" placeholder="Write a reply..." required></textarea>
+                            <div class="reply-form-actions">
+                                <button type="button" class="btn-comment-cancel" onclick="toggleReplyForm({{ comment.pk }})">Cancel</button>
+                                <button type="submit" class="btn-reply-submit">Reply</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Replies -->
+                    {% if comment.replies.exists %}
+                    <div class="replies-list">
+                        {% for reply in comment.replies.all %}
+                        <div class="reply-item" id="comment-{{ reply.pk }}">
+                            <div class="reply-avatar">
+                                {{ reply.user.username|make_list|first|upper }}
+                            </div>
+                            <div class="reply-content">
+                                <div class="comment-header">
+                                    <span class="comment-author">{{ reply.user.username }}</span>
+                                    <span class="comment-time">{{ reply.created_at|timesince }} ago</span>
+                                </div>
+                                
+                                <p class="comment-text" id="comment-text-{{ reply.pk }}">{{ reply.text }}</p>
+                                
+                                <!-- Reply Edit Form -->
+                                <form method="post" action="{% url 'core:comment_edit' reply.pk %}" class="comment-edit-form" id="edit-form-{{ reply.pk }}" style="display: none;">
+                                    {% csrf_token %}
+                                    <textarea class="comment-edit-textarea" name="text" rows="2" required>{{ reply.text }}</textarea>
+                                    <div class="comment-edit-actions">
+                                        <button type="button" class="btn-comment-cancel" onclick="cancelEdit({{ reply.pk }})">Cancel</button>
+                                        <button type="submit" class="btn-comment-save">Save</button>
+                                    </div>
+                                </form>
+                                
+                                {% if user.is_authenticated and user == reply.user %}
+                                <div class="comment-actions" id="actions-{{ reply.pk }}">
+                                    <button type="button" class="btn-comment-action" onclick="toggleEdit({{ reply.pk }})">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                        Edit
+                                    </button>
+                                    <form method="post" action="{% url 'core:comment_delete' reply.pk %}" class="comment-delete-form" onsubmit="return confirm('Delete this reply?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-comment-action btn-comment-delete">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% empty %}
@@ -109,4 +219,44 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleReplyForm(commentId) {
+    const replyForm = document.getElementById('reply-form-' + commentId);
+    if (replyForm.style.display === 'none') {
+        document.querySelectorAll('.reply-form-wrapper').forEach(form => {
+            form.style.display = 'none';
+        });
+        replyForm.style.display = 'block';
+        replyForm.querySelector('textarea').focus();
+    } else {
+        replyForm.style.display = 'none';
+    }
+}
+
+function toggleEdit(commentId) {
+    const textEl = document.getElementById('comment-text-' + commentId);
+    const editForm = document.getElementById('edit-form-' + commentId);
+    const actionsEl = document.getElementById('actions-' + commentId);
+    
+    if (editForm.style.display === 'none') {
+        textEl.style.display = 'none';
+        editForm.style.display = 'block';
+        if (actionsEl) actionsEl.style.display = 'none';
+        editForm.querySelector('textarea').focus();
+    } else {
+        cancelEdit(commentId);
+    }
+}
+
+function cancelEdit(commentId) {
+    const textEl = document.getElementById('comment-text-' + commentId);
+    const editForm = document.getElementById('edit-form-' + commentId);
+    const actionsEl = document.getElementById('actions-' + commentId);
+    
+    textEl.style.display = 'block';
+    editForm.style.display = 'none';
+    if (actionsEl) actionsEl.style.display = 'flex';
+}
+</script>
 {% endblock %}
