@@ -26,7 +26,7 @@
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                         </a>
-                        <form method="post" action="{% url 'core:item_delete' item.pk %}" onsubmit="return confirm('Delete this item? This cannot be undone.');" class="m-0">
+                        <form method="post" action="{% url 'core:item_delete' item.pk %}" class="m-0 needs-confirm" data-confirm-message="Delete this item? This cannot be undone.">
                             {% csrf_token %}
                             <button type="submit" class="btn-icon btn-icon-danger" title="Delete">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -41,6 +41,9 @@
                     {% endif %}
                 </div>
                 <h5 class="meta-text mb-4">Location: {{ item.location }}</h5>
+                {% if item.description %}
+                <p class="item-description mt-2 mb-3">{{ item.description }}</p>
+                {% endif %}
                 <hr>
                 <p class="meta-text mb-0">Posted by <strong>{{ item.user.username }}</strong> on {{ item.created_at|date:"M d, Y" }}</p>
             </div>
@@ -126,7 +129,7 @@
                             </svg>
                             Edit
                         </button>
-                        <form method="post" action="{% url 'core:comment_delete' comment.pk %}" class="comment-delete-form" onsubmit="return confirm('Delete this comment?');">
+                        <form method="post" action="{% url 'core:comment_delete' comment.pk %}" class="comment-delete-form needs-confirm" data-confirm-message="Delete this comment?">
                             {% csrf_token %}
                             <button type="submit" class="btn-comment-action btn-comment-delete">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -188,7 +191,7 @@
                                         </svg>
                                         Edit
                                     </button>
-                                    <form method="post" action="{% url 'core:comment_delete' reply.pk %}" class="comment-delete-form" onsubmit="return confirm('Delete this reply?');">
+                                    <form method="post" action="{% url 'core:comment_delete' reply.pk %}" class="comment-delete-form needs-confirm" data-confirm-message="Delete this reply?">
                                         {% csrf_token %}
                                         <button type="submit" class="btn-comment-action btn-comment-delete">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -1398,6 +1398,14 @@ a:hover {
   width: 100%;
   height: 180px;
   object-fit: cover;
+
+/* Full item description on detail view */
+.item-description {
+  color: var(--text);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
 }
 
 .empty-image {
@@ -1735,4 +1743,90 @@ a:hover {
   .comment-time {
     align-self: flex-start;
   }
+}
+
+/* ============ CONFIRMATION MODAL ============ */
+#confirmModal .modal-content {
+  border-radius: 14px;
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+#confirmModal .confirm-modal-header {
+  background: linear-gradient(135deg, #ff6b6b, #ff8a6b);
+  color: #fff;
+  border-bottom: none;
+  padding: 0.35rem 0.9rem 0.35rem 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+#confirmModal .confirm-modal-header svg { margin-left: 0; }
+
+#confirmModal .confirm-modal-header .btn-close {
+  margin-left: auto;
+}
+
+#confirmModal .confirm-modal-header svg {
+  flex-shrink: 0;
+}
+
+#confirmModal .modal-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0;
+}
+
+#confirmModal .modal-body {
+  padding: 1rem 1.25rem;
+  color: var(--text);
+}
+
+#confirmModal .modal-body-title {
+  margin: 0 0 0.35rem 0;
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+#confirmModal #confirmModalMessage {
+  margin: 0;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+#confirmModal .modal-footer {
+  border-top: none;
+  padding: 0.75rem 1rem 1rem;
+}
+
+#confirmModal .btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+}
+
+#confirmModalConfirm {
+  background: linear-gradient(135deg,#ff5f6d,#ff3b3b);
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  box-shadow: 0 8px 20px rgba(255,75,75,0.14);
+}
+
+#confirmModalConfirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(255,75,75,0.18);
+}
+
+@media (max-width: 575.98px) {
+  #confirmModal .modal-dialog { max-width: 92%; }
+  #confirmModal .modal-title { font-size: 0.98rem; }
+  #confirmModal #confirmModalMessage { font-size: 0.95rem; }
 }
