@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">My Profile</h1>
+    <p class="page-subtitle">Your posts, your comments, and your account settings.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="surface-card p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="avatar-circle" style="width: 56px; height: 56px; font-size: 1.25rem;">{{ user.username|first|upper }}</div>
+                <div>
+                    <h4 class="mb-1 fw-bold">{{ user.username }}</h4>
+                    <p class="text-muted mb-0">{{ user.email|default:'No email provided' }}</p>
+                </div>
+            </div>
+
+            <div class="row g-3 text-center">
+                <div class="col-6">
+                    <div class="surface-card p-3">
+                        <div class="fw-bold fs-4">{{ stats.items_count }}</div>
+                        <div class="text-muted small">Posts</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="surface-card p-3">
+                        <div class="fw-bold fs-4">{{ stats.comments_count }}</div>
+                        <div class="text-muted small">Comments</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="surface-card p-3">
+                        <div class="fw-bold fs-4">{{ stats.lost_count }}</div>
+                        <div class="text-muted small">Lost</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="surface-card p-3">
+                        <div class="fw-bold fs-4">{{ stats.found_count }}</div>
+                        <div class="text-muted small">Found</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-grid gap-2">
+                <a class="btn btn-primary" href="{% url 'password_change' %}">Change Password</a>
+                <a class="btn btn-outline-danger" href="{% url 'accounts:delete_account' %}">Delete Account</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="surface-card p-4 mb-4">
+            <h4 class="fw-bold mb-3">My Posts</h4>
+            {% if user_items %}
+                <div class="list-group">
+                    {% for item in user_items %}
+                    <a href="{% url 'core:item_detail' item.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold">{{ item.title }}</div>
+                            <small class="text-muted">{{ item.location }} · {{ item.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <span class="status-badge {% if item.status == 'Lost' %}status-lost{% else %}status-found{% endif %}">{{ item.status }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">You have not posted anything yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="surface-card p-4">
+            <h4 class="fw-bold mb-3">My Comments</h4>
+            {% if user_comments %}
+                <div class="list-group">
+                    {% for comment in user_comments %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div>
+                                <div class="fw-semibold">On <a href="{% url 'core:item_detail' comment.item.pk %}">{{ comment.item.title }}</a></div>
+                                <p class="mb-1 text-muted">{{ comment.text|truncatechars:120 }}</p>
+                                <small class="text-muted">{{ comment.created_at|date:"M d, Y" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">You have not left any comments yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

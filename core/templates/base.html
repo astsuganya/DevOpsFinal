@@ -39,7 +39,7 @@
                                 <div class="avatar-circle">{{ user.username|first|upper }}</div>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="post" action="{% url 'logout' %}" class="m-0">
@@ -51,7 +51,7 @@
                         </li>
                     {% else %}
                         <li class="nav-item"><a class="btn btn-glow" href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-item"><a class="nav-link text-signup" href="{% url 'register' %}">Sign up</a></li>
+                        <li class="nav-item"><a class="nav-link text-signup" href="{% url 'accounts:register' %}">Sign up</a></li>
                     {% endif %}
                 </ul>
             </div>
