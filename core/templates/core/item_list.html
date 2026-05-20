@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load image_tags %}
 {% block content %}
 <div class="page-header">
     {% if status == 'Lost' %}
@@ -29,10 +30,17 @@
     <div class="col stagger-1">
         <div class="surface-card item-card h-100">
             <div class="item-card-image-wrapper">
-                {% if item.image %}
+                {% if item.image|file_exists %}
                 <img src="{{ item.image.url }}" class="card-img-top item-image" alt="{{ item.title }}">
                 {% else %}
-                <div class="empty-image">No image uploaded</div>
+                <div class="empty-image">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.35">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span style="font-size:0.78rem;opacity:0.5;display:block;margin-top:6px">No image</span>
+                </div>
                 {% endif %}
                 {% if item.status == 'Lost' %}
                     <span class="status-chip status-chip-lost">Lost</span>
