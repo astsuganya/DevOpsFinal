@@ -230,6 +230,11 @@ body, .app-body {
   cursor: pointer;
 }
 
+/* Square button utility: remove rounded corners */
+.btn-square {
+  border-radius: 0 !important;
+}
+
 /* Sign up link (non-button) */
 .text-signup {
   color: var(--text-muted) !important;
@@ -715,6 +720,12 @@ a:hover {
 .form-panel .row.g-4 {
   --bs-gutter-x: 2rem;
   --bs-gutter-y: 1.5rem;
+}
+
+/* Ensure square buttons override other button styles */
+.btn.btn-square,
+.btn-glow.btn-square {
+  border-radius: 0 !important;
 }
 
 .form-panel .d-grid.gap-2 {
