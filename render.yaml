@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: devopsfinal
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn lostandfound_project.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: MEDIA_ROOT
+        value: /var/data/media
+    disks:
+      - name: media
+        mountPath: /var/data/media
+        sizeGB: 1
