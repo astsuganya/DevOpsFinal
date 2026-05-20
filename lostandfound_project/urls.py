@@ -26,5 +26,5 @@ urlpatterns = [
     path('', include('core.urls')),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG or settings.RENDER_EXTERNAL_HOSTNAME:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
